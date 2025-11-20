@@ -72,6 +72,9 @@ def list_files(path):
     return result
     
 def build_local_list(all_images_path, selected_images_path):
+    """
+    Builds a local list of ImageFile
+    """
     all_images = set(list_files(all_images_path))
     selected_images = set(list_files(selected_images_path))
     
@@ -126,6 +129,9 @@ def build_local_list(all_images_path, selected_images_path):
     return all
 
 def parse_bool(value):
+    """
+    Utility function to parse Google Sheet boolean values
+    """
     truth = ['TRUE']
     
     if value in truth:
@@ -133,6 +139,9 @@ def parse_bool(value):
     return False
 
 def build_remote_list(service):
+    """
+    Builds a remote list of ImageFile
+    """
     result = (
         service.spreadsheets()
         .values()
@@ -156,6 +165,9 @@ def build_remote_list(service):
     return files
 
 def compare(tracked, local):
+    """
+    Compares list of tracked and local ImageFile
+    """
     to_update = []
     to_insert = []
     for f in local:
@@ -169,6 +181,9 @@ def compare(tracked, local):
     return to_insert, to_update
 
 def insert_files(service, values):
+    """
+    Builds an execute an insert request for ImageFile
+    """
     values = [
         f.to_list() for f in values
     ]
@@ -190,6 +205,9 @@ def insert_files(service, values):
     )
 
 def update_files(service, values):
+    """
+    Builds an execute an update request for ImageFile
+    """
     data = []
     
     for f in values:
