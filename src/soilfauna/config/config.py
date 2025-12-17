@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 import os
+import yaml
 
 class DefaultConfig:
     """
@@ -37,6 +38,17 @@ class RunConfig:
         self.annotations_dir = os.path.join(self.run_dir, DefaultConfig.DEFAULT_OUTPUT_ANNOTATION_DIR_NAME)
         self.crops_dir = os.path.join(self.run_dir, DefaultConfig.DEFAULT_OUTPUT_CROPS_DIR_NAME)
         self.images_dir = os.path.join(self.run_dir, DefaultConfig.DEFAULT_OUTPUT_IMAGES_DIR_NAME)
+        
+class Config:
+    def __init__():
+        pass
+            
+    def load_from_file(self, path: str) -> dict:
+        with open(path) as stream:
+            try:
+                print(yaml.safe_load(stream))
+            except yaml.YAMLError as e:
+                print(e)
     
     
     

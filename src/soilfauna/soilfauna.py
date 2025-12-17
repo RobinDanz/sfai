@@ -1,3 +1,5 @@
+from soilfauna.cli import add_segment_parser
+
 from soilfauna.config import DefaultConfig, RunConfig
 from soilfauna.preprocess.operators import BackgroundRemoveHSVOperator, BinaryConvertOperator
 from soilfauna.dataset import Dataset
@@ -12,7 +14,26 @@ from collections import defaultdict
 
 from pathlib import Path
 import os
+import argparse
 
+parser = argparse.ArgumentParser(
+    prog='soilfauna',
+    description='Set of tools to handle image files.'
+)
+
+parser.add_argument(
+    "-V", "--verbose",
+    help="Verbose mode..",
+    required=False
+)
+
+subparsers = parser.add_subparsers(
+    title="subcommands",
+    dest="command",
+    required=True
+)
+
+add_segment_parser(subparsers)
 
 
 ROOT_DIR = Path(__file__).parent.parent.parent.as_posix()
@@ -71,8 +92,12 @@ def generate_run_config(run_name=DefaultConfig.DEFAULT_RUN_NAME) -> RunConfig:
     os.makedirs(run_config.images_dir)
     
     return run_config
-    
+
 def main():
+    args = parser.parse_args()
+    args.func(args)
+    
+def test():
     if not os.path.isdir(DefaultConfig.DEFAULT_MODEL_PATH):
         os.makedirs(DefaultConfig.DEFAULT_MODEL_PATH)
     
