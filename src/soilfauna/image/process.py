@@ -19,7 +19,7 @@ def apply_kmeans(image):
         [114.45, 146.57, 187.97]
     ])
 
-    kmeans = KMeans(n_clusters=5, init=kmeans_init_centers, random_state=42)
+    kmeans = KMeans(n_clusters=5, init=kmeans_init_centers, random_state=42, verbose=1)
     cluster_labels = kmeans.fit_predict(rgb_image)
     
     ratio = 1

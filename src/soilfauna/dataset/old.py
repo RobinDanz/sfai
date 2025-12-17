@@ -1,20 +1,19 @@
 from pathlib import Path
-import os
 import cv2
 import json
 from typing import List
 from soilfauna.image.process import apply_kmeans
 
-class Dataset:
+class DatasetMetadata:
     """
-    Dataset loader
+    Dataset loader with metadata support
     """
     def __init__(self, data_path, metadata_path=None, preload=True, metadata_prefix='metadata'):
         self.data_path = data_path
         self.metadata_path = metadata_path
         self.metadata_prefix = metadata_prefix
 
-        self.data: List[ImageData] = []
+        self.data: List[ImageDataMetadata] = []
 
         if preload:
             self.load()
@@ -36,7 +35,7 @@ class Dataset:
                 metadata_json = next(metadata_path.rglob(f'{name}{self.metadata_prefix}.json'), None)
             
             self.append(
-                ImageData(image_path=image, metadata_path=metadata_json)
+                ImageDataMetadata(image_path=image, metadata_path=metadata_json)
             )
             
     
@@ -54,8 +53,8 @@ class Dataset:
     
     def append(self, value):
         self.data.append(value)
-
-class ImageData:
+        
+class ImageDataMetadata:
     """
     Object holding image and json metadata
     """
