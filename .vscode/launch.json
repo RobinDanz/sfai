@@ -6,6 +6,7 @@
       "type": "python",
       "request": "launch",
       "module": "soilfauna.soilfauna",
+      "args": ["segment", "--config", "config.yaml"],
       "console": "integratedTerminal",
       "env": {
         "PYTHONPATH": "${workspaceFolder}/src"

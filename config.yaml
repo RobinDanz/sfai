@@ -1,3 +1,11 @@
-run:
-  name: run_name
+verbose: True
+
+segment:
+  name: test
+  datasets: 
+    - /Users/robin/Pictures/soil-fauna-ai/test/debug
+    - /Users/robin/Pictures/soil-fauna-ai/test/BM3-B_r3c3.jpg
+    - /Users/robin/Pictures/soil-fauna-ai/test/subfolders/A
+    - /Users/robin/Pictures/soil-fauna-ai/test/subfolders/B
+
   

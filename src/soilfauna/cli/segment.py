@@ -1,4 +1,6 @@
-from soilfauna.config import ConfigParser
+from soilfauna.config import SegmentationConfig
+from soilfauna.segmentation import segment
+
 
 def add_segment_parser(subparsers):
     parser = subparsers.add_parser(
@@ -13,12 +15,16 @@ def add_segment_parser(subparsers):
         help="Config file"
     )
     
+    parser.add_argument(
+        "-d", "--dry",
+        action='store_true',
+        help="Dry Run. Display images informations"
+    )
+    
     parser.set_defaults(func=run_segmentation)
     
 def run_segmentation(args):
-    print("Automatic segmentation")
-    print("Configuration file: ", args.config)
-    parser = ConfigParser()
-    config = parser.load_from_path(args.config)
-    
-    
+        cfg = SegmentationConfig.from_file(args.config)
+        cfg.create_run_folder()
+        
+        segment(cfg, dry=args.dry)
