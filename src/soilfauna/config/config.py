@@ -107,6 +107,8 @@ class SegmentationConfig(UserConfig):
     CONFIG_NAMESPACE = 'segment'
     
     id: int | None = None
+    save_intermediate_images: bool = False
+    save_final_images: bool = False
     name: str = default.DEFAULT_RUN_NAME
     base_dir: Path = default.DEFAULT_OUTPUT_DIR
     model: Path = default.DEFAULT_MODEL

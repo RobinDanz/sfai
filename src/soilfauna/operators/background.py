@@ -1,18 +1,23 @@
-from soilfauna.operators import Operator
+from soilfauna.operators import Operator, save_artifacts
 from soilfauna.pipeline import PipelineContext
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
+from typing import Tuple
+from pathlib import Path
 
 class HSVBackgroundRemoval(Operator):
     """
     Removes background based on HSV colors
     """
-    def __init__(self, lower_bound=[90,  40,  40], upper_bound=[145, 255, 255], binarize=False):
+    
+    save_folder = 'no_background'
+    
+    def __init__(self, lower_bound=[90,  40,  40], upper_bound=[145, 255, 255], save: bool = False):
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
-        self.binarize = binarize
-        
+        self.save = save
+    
+    @save_artifacts
     def __call__(self, ctx: PipelineContext) -> PipelineContext:
         hsv = cv2.cvtColor(ctx.image, cv2.COLOR_BGR2HSV)
         
@@ -32,4 +37,14 @@ class HSVBackgroundRemoval(Operator):
         ctx.clean_image = cleaned
         
         return ctx
+    
+    def result_image(self, ctx: PipelineContext) -> Tuple[np.ndarray, Path]:
+        crop_subfolder = ctx.output_handler.generate_crop_subfodler(
+            ctx.image_info.name,
+            self.save_folder
+        )
+        
+        save_path = crop_subfolder / f'{ctx.index}.jpg'
+        
+        return cv2.cvtColor(ctx.clean_image, cv2.COLOR_BGR2RGB), save_path
         

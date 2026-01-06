@@ -31,12 +31,12 @@ def segment(config: SegmentationConfig, dry=False):
     
     pipeline = Pipeline(
         operators=[
-            HSVBackgroundRemoval(),
-            BinaryTransform(),
-            WatershedSegmentation(),
-            ContourDetection(),
-            CentersDetection(),
-            SAMSegmentation(config.model),
+            HSVBackgroundRemoval(save=config.save_intermediate_images),
+            BinaryTransform(save=config.save_intermediate_images),
+            WatershedSegmentation(save=config.save_intermediate_images),
+            ContourDetection(save=config.save_intermediate_images),
+            CentersDetection(save=config.save_intermediate_images),
+            SAMSegmentation(config.model, save=config.save_intermediate_images),
         ]
     )
     
@@ -52,12 +52,13 @@ def segment(config: SegmentationConfig, dry=False):
                 base_dir=config.base_output_dir,
                 subname=dataset.root.stem
             )
+            
             out.generate_output_folders()
             
             dataset_runner = DatasetRunner(
                 dataset=dataset,
                 image_runner=image_runner,
-                output=out
+                output_handler=out
             )
     
             dataset_runner.run()

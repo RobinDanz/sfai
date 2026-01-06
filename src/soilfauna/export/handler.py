@@ -14,6 +14,12 @@ class OutputHandler:
         self.annotation_dir.mkdir(parents=True, exist_ok=True)
         self.crop_dir.mkdir(parents=True, exist_ok=True)
         self.image_dir.mkdir(parents=True, exist_ok=True)
+        
+    def generate_crop_subfodler(self, image_name: str, subfolder: str):
+        crop_subfolder = self.crop_dir / image_name / subfolder
+        crop_subfolder.mkdir(parents=True, exist_ok=True)
+        
+        return crop_subfolder
     
     @property
     def annotation_dir(self) -> Path:

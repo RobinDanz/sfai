@@ -1,4 +1,4 @@
-from soilfauna.operators import Operator
+from soilfauna.operators import Operator, save_artifacts
 from soilfauna.pipeline import PipelineContext
 import torch
 from ultralytics.models import SAM
@@ -10,10 +10,15 @@ class SAMSegmentation(Operator):
     """
     Objects segmentation using SAM
     """
-    def __init__(self, model: Path | str):
+    
+    save_folder = 'sam'
+    
+    def __init__(self, model: Path | str, save: bool = False):
         self.model = SAM(model.absolute())
         self.device = self._get_device()
-        
+        self.save = save
+    
+    @save_artifacts
     def __call__(self, ctx: PipelineContext) -> PipelineContext:
         tile_mask = np.zeros(ctx.image.shape[:2], dtype=np.uint16)
         points = self.merge_centers(ctx.points)
@@ -83,3 +88,17 @@ class SAMSegmentation(Operator):
                 merged_masks.append(mask)
         
         return merged_masks, len(merged_masks)
+    
+    def result_image(self, ctx: PipelineContext):
+        crop_subfolder = ctx.output_handler.generate_crop_subfodler(
+            ctx.image_info.name,
+            self.save_folder
+        )
+        
+        save_path = crop_subfolder / f'{ctx.index}.jpg'
+        
+        plt_kwargs = {
+            'cmap': 'nipy_spectral'
+        }
+        
+        return ctx.sam_mask, save_path, plt_kwargs

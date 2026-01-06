@@ -1,4 +1,4 @@
-from soilfauna.operators import Operator
+from soilfauna.operators import Operator, save_artifacts
 from soilfauna.pipeline import PipelineContext
 import numpy as np
 import cv2
@@ -7,9 +7,13 @@ class ContourDetection(Operator):
     """
     Contour detection based on labelled image
     """
-    def __init__(self):
-        pass
     
+    save_folder = 'contours'
+    
+    def __init__(self, save: bool = False):
+        self.save = save
+    
+    @save_artifacts
     def __call__(self, ctx: PipelineContext) -> PipelineContext:
         watershed_labels = ctx.metadata.get('labels', [])
         unique_labels = np.unique(watershed_labels)
@@ -29,3 +33,18 @@ class ContourDetection(Operator):
         ctx.contours = contours
         
         return ctx
+    
+    def result_image(self, ctx: PipelineContext):
+        crop_subfolder = ctx.output_handler.generate_crop_subfodler(
+            ctx.image_info.name,
+            self.save_folder
+        )
+        
+        save_path = crop_subfolder / f'{ctx.index}.jpg'
+        
+        img = ctx.clean_image.copy()
+        
+        for conts in ctx.contours:
+            cv2.drawContours(img, conts, -1, (0, 0, 255), 3)
+        
+        return cv2.cvtColor(img, cv2.COLOR_BGR2RGB), save_path

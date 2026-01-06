@@ -36,7 +36,7 @@ class Dataset(ABC):
         pass
     
 class ImageFolderDataset(Dataset):
-    def __init__(self, root: Path, extensions=['.jpg']):
+    def __init__(self, root: Path, extensions=['.jpg', '.jpeg', '.png']):
         self.root = root
         self.paths = []
 

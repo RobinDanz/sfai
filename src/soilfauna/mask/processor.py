@@ -10,11 +10,9 @@ from soilfauna.export.data import CocoAnnotation
 class MaskProcessor:
     def __init__(
         self, 
-        epsilon_ratio: float = 0.005,
         simplify_tolerance: float = 1.0,
         min_area: int = 20,
     ):
-        self.epsilon_ratio = epsilon_ratio
         self.simplification_tolerance = simplify_tolerance
         self.min_area = min_area
         

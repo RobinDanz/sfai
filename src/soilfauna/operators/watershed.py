@@ -1,4 +1,4 @@
-from soilfauna.operators import Operator
+from soilfauna.operators import Operator, save_artifacts
 from soilfauna.pipeline import PipelineContext
 import cv2
 import numpy as np
@@ -11,9 +11,13 @@ class WatershedSegmentation(Operator):
     """
     Watershed segmentation operator
     """
-    def __init__(self):
-        pass
     
+    save_folder = 'watershed'
+    
+    def __init__(self, save: bool = False):
+        self.save = save
+    
+    @save_artifacts
     def __call__(self, ctx: PipelineContext):
         distance = cv2.distanceTransform(ctx.binary_mask, cv2.DIST_L2, 5)
         distance_smooth = cv2.GaussianBlur(distance, (0,0), sigmaX=2)
@@ -35,4 +39,18 @@ class WatershedSegmentation(Operator):
         ctx.metadata['labels'] = labels
 
         return ctx
+    
+    def result_image(self, ctx: PipelineContext):
+        crop_subfolder = ctx.output_handler.generate_crop_subfodler(
+            ctx.image_info.name,
+            self.save_folder
+        )
+        
+        save_path = crop_subfolder / f'{ctx.index}.jpg'
+        
+        plt_kwargs = {
+            'cmap': 'nipy_spectral'
+        }
+        
+        return ctx.metadata['labels'], save_path, plt_kwargs
         

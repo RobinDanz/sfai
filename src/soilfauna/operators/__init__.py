@@ -1,4 +1,4 @@
-from .base import Operator
+from .base import Operator, save_artifacts
 from .background import HSVBackgroundRemoval
 from .binary import BinaryTransform
 from .watershed import WatershedSegmentation

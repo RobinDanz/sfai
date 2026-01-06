@@ -1,13 +1,16 @@
-from soilfauna.operators import Operator
+from soilfauna.operators import Operator, save_artifacts
 from soilfauna.pipeline import PipelineContext
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 
 class BinaryTransform(Operator):
-    def __init__(self):
-        pass
     
+    save_folder = 'binary'
+    
+    def __init__(self, save: bool = False):
+        self.save = save
+    
+    @save_artifacts
     def __call__(self, ctx: PipelineContext) -> PipelineContext:
         mask = (ctx.clean_image == [255, 255, 255]).all(axis=-1)
         binary = np.zeros_like(ctx.clean_image)
@@ -29,6 +32,20 @@ class BinaryTransform(Operator):
         ctx.binary_mask = binary
         
         return ctx
+    
+    def result_image(self, ctx: PipelineContext):
+        crop_subfolder = ctx.output_handler.generate_crop_subfodler(
+            ctx.image_info.name,
+            self.save_folder
+        )
+        
+        save_path = crop_subfolder / f'{ctx.index}.jpg'
+        
+        plt_kwargs = {
+            'cmap': 'binary'
+        }
+        
+        return ctx.binary_mask, save_path, plt_kwargs
         
 
         
