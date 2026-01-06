@@ -1,16 +1,43 @@
 from soilfauna.operators import Operator, save_artifacts
 from soilfauna.pipeline import PipelineContext
-import torch
-from ultralytics.models import SAM
 from pathlib import Path
 import numpy as np
 
+from typing import TYPE_CHECKING
+
+def load_sam():
+    try:
+        from ultralytics import SAM
+        
+        return SAM
+    except ImportError as e:
+        raise RuntimeError(
+            'Ultralytics is not installed.'
+            'Install it by running pip install ".[sam]"'
+        ) from e
+
+def load_torch():
+    try:
+        import torch
+        
+        return torch
+    except ImportError as e:
+        raise RuntimeError(
+            'PyTorch is not installed.'
+            'Install it manually'
+        )
+        
+if TYPE_CHECKING:
+    import torch
+    from ultralytics import SAM
+        
+SAM = load_sam()
+torch = load_torch()
 
 class SAMSegmentation(Operator):
     """
     Objects segmentation using SAM
     """
-    
     save_folder = 'sam'
     
     def __init__(self, model: Path | str, save: bool = False):

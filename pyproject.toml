@@ -13,12 +13,18 @@ dependencies = [
     "requests",
     "python-dotenv",
     "opencv-python",
-    "ultralytics",
     "numpy",
     "matplotlib",
     "scikit-learn",
+    "scikit-image",
     "shapely",
-    "pandas"
+    "pandas",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+sam = [
+  "ultralytics",
 ]
 
 [project.urls]

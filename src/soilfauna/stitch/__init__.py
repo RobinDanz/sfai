@@ -1,2 +1,2 @@
-from .stitch import gen_mosaic
+# from .stitch import gen_mosaic
 from .mask import MaskStitcher
