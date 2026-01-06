@@ -47,7 +47,8 @@ def segment(config: SegmentationConfig, dry=False):
         config=config
     )
     
-    for dataset in datasets:
+    for i, dataset in enumerate(datasets, 1):
+        GLOBAL_LOGGER.info(f"Dataset: {i}/{len(datasets)}")
         if dataset.length > 0:
             out = OutputHandler(
                 base_dir=config.base_output_dir,
