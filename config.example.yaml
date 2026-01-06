@@ -1,0 +1,15 @@
+
+
+# Segmentation configuration
+segment:
+  # Name of the output folder
+  name: output_name
+  # Saving intermediate results (crops). Might slow down the process
+  save_intermediate_images: False
+  # Saving final results (image with contours & image with labels)
+  save_final_images: True
+  # Images to segment. Can be folders with images or single images.
+  datasets: 
+    # - /images/this_image_jpg
+    # - /images/another_image_png
+    # - /images/subfolder/a_lot_of_image_folder
