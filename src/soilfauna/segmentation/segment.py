@@ -6,11 +6,11 @@ if TYPE_CHECKING:
 
 from soilfauna.pipeline import Pipeline
 from soilfauna.operators import (
-    HSVBackgroundRemoval, 
-    BinaryTransform, 
-    WatershedSegmentation, 
+    HSVBackgroundRemoval,
+    BinaryTransform,
+    WatershedSegmentation,
     ContourDetection, 
-    CentersDetection, 
+    CentersDetection,
     SAMSegmentation
 )
 
@@ -18,14 +18,15 @@ from soilfauna.data import ImageTiler, generate_datasets
 from soilfauna.runners import DatasetRunner, ImagePipelineRunner
 from soilfauna.export import OutputHandler
 
+from soilfauna.logging import GLOBAL_LOGGER
 
 def segment(config: SegmentationConfig, dry=False):
     datasets = generate_datasets(config.datasets)
+    print(config.log_level)
     
-    if dry:
-        print('Dry run. Dataset informations')
-        
-        return
+    GLOBAL_LOGGER.set_level(config.log_level)
+    
+    GLOBAL_LOGGER.info('START SEGMENTATION')
     
     tiler = ImageTiler()
     

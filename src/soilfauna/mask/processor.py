@@ -2,15 +2,16 @@ import cv2
 import numpy as np
 
 from typing import Iterator, Dict, Any
-from shapely import MultiPolygon, Polygon
+from shapely import MultiPolygon, Polygon, union_all
 from shapely.ops import unary_union
 from soilfauna.export.data import CocoAnnotation
+from soilfauna.logging import GLOBAL_LOGGER
 
 
 class MaskProcessor:
     def __init__(
         self, 
-        simplify_tolerance: float = 1.0,
+        simplify_tolerance: float = 0.5,
         min_area: int = 20,
     ):
         self.simplification_tolerance = simplify_tolerance
@@ -61,18 +62,13 @@ class MaskProcessor:
             if polygon is None:
                 continue
             
-            polygon = polygon.simplify(
-                self.simplification_tolerance,
-                preserve_topology=True
-            )
-            
             if polygon.area >= self.min_area:
                 polygons.append(polygon)
                 
         if not polygons:
             return []
-                
-        merged_polygons = unary_union(polygons)
+        
+        merged_polygons = union_all(polygons)
         
         if isinstance(merged_polygons, Polygon):
             merged_polygons = [merged_polygons]
@@ -107,6 +103,7 @@ class MaskProcessor:
     
     def build_annotations(self, label_image: np.ndarray, image_id: int, category_id: int) -> Iterator[CocoAnnotation]:
         for i, mask in enumerate(self.extract_masks(label_image), 1):
+            GLOBAL_LOGGER.debug(f"Mask: {i}")
             polygons = self.mask_to_polygons(mask)
             
             if not polygons:

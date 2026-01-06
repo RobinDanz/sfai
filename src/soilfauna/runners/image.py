@@ -13,6 +13,8 @@ from soilfauna.data import ImageInfo
 from soilfauna.export.data import CocoAnnotation
 from soilfauna.export import OutputHandler
 
+from soilfauna.logging import PIPELINE_LOGGER
+
 
 @dataclass
 class TileResult:
@@ -82,6 +84,8 @@ class TilePipelinRunner:
         tiles = self.tiler.split(image)
         results = []
         
+        PIPELINE_LOGGER.start_image(image_info.file_name, nb_tiles=len(tiles))
+        
         for index, tile in enumerate(tiles):
             ctx = self.pipeline.run(tile.image, image_info, index, output_handler)
 
@@ -89,5 +93,9 @@ class TilePipelinRunner:
                 tile=tile,
                 ctx=ctx
             ))
+            
+            PIPELINE_LOGGER.update()
+        
+        PIPELINE_LOGGER.end_image()
             
         return results

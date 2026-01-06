@@ -8,8 +8,8 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument(
-    "-V", "--verbose",
-    help="Verbose mode..",
+    "-l", "--log",
+    help="Log level (0: Warning, 1: Info, 2: Debug) Defaults to 1.",
     required=False
 )
 

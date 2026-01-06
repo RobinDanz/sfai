@@ -30,9 +30,10 @@ def load_torch():
 if TYPE_CHECKING:
     import torch
     from ultralytics import SAM
-        
+
+torch = load_torch()        
 SAM = load_sam()
-torch = load_torch()
+
 
 class SAMSegmentation(Operator):
     """

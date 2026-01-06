@@ -1,25 +1,33 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, TypeVar, Type
 from dataclasses import dataclass, asdict, field
+from abc import ABC, abstractmethod
 
-@dataclass
-class CocoData:
+T = TypeVar("T", bound="Writable")
+
+class Writable(ABC):
+    @abstractmethod
     def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        pass
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "CocoData":
+    def from_dict(cls: Type[T], data: Dict[str, Any]) -> T:
         return cls(**data)
 
 @dataclass
-class CocoImage(CocoData):
+class CocoData(Writable):
     id: int
+    
+    def to_dict(self):
+        return asdict(self)
+
+@dataclass
+class CocoImage(CocoData):
     width: int
     height: int
     file_name: str
     
 @dataclass
 class CocoAnnotation(CocoData):
-    id: int
     image_id: int
     category_id: int
     area: float
@@ -29,7 +37,6 @@ class CocoAnnotation(CocoData):
 
 @dataclass
 class CocoCategory(CocoData):
-    id: int
     name: str
     supercategory: str = ""
     

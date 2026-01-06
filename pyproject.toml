@@ -20,11 +20,8 @@ dependencies = [
     "shapely",
     "pandas",
     "pyyaml",
-]
-
-[project.optional-dependencies]
-sam = [
-  "ultralytics",
+    "ultralytics",
+    "tqdm",
 ]
 
 [project.urls]

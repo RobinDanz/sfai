@@ -13,7 +13,7 @@ class UserConfig:
     """
     CONFIG_NAMESPACE: ClassVar[str | None] = None
     
-    verbose: bool = False
+    log_level: int = 1
     root_dir: Path = default.ROOT_DIR
     
     @classmethod
