@@ -190,7 +190,7 @@ out/*
 # Local files
 data/*
 results/*
-.vscode/*
+.vscode
 
 # Config files
 config.yaml
