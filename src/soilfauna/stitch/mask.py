@@ -8,7 +8,14 @@ if TYPE_CHECKING:
     from soilfauna.runners import TileResult
     
 class DSU:
+    """_summary_
+    """
     def __init__(self, n):
+        """_summary_
+
+        Args:
+            n (_type_): _description_
+        """
         self.parent = list(range(n + 1))
 
     def find(self, x):
@@ -24,18 +31,31 @@ class DSU:
     
 
 class MaskStitcher:
+    """_summary_
+    """
     def __init__(self):
+        """_summary_
+        """
         self.border_equiv = defaultdict(set)
     
-    def stitch(self, results: list[TileResult], image_shape):
+    def stitch(self, tiles: list[TileResult], image_shape):
+        """_summary_
+
+        Args:
+            tiles (list[TileResult]): _description_
+            image_shape (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         H, W = image_shape[:2]
-        final_mask = np.zeros((H, W), dtype=np.uint8)
+        final_mask = np.zeros((H, W), dtype=np.uint16)
         
         total_label_count = 0
         
-        for r in results:
-            tile = r.tile
-            tile_mask = r.ctx.sam_mask
+        for t in tiles:
+            tile = t.tile
+            tile_mask = t.ctx.sam_mask
             x1, y1, x2, y2 = tile.coords
             h,w = tile_mask.shape
             
@@ -78,14 +98,14 @@ class MaskStitcher:
                 tile_mask
             )
             
-            total_label_count += r.ctx.metadata.get('label_count', 0)
+            total_label_count += t.ctx.metadata.get('label_count', 0)
         
         dsu = DSU(total_label_count)
     
         for a, neighbors in self.border_equiv.items():
             for b in neighbors:
                 dsu.union(a, b)
-                
+
         final_image = np.zeros_like(final_mask)
 
         unique = np.unique(final_mask)

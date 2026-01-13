@@ -3,6 +3,11 @@ from soilfauna.segmentation import segment
 
 
 def add_segment_parser(subparsers):
+    """_summary_
+
+    Args:
+        subparsers (_type_): _description_
+    """
     parser = subparsers.add_parser(
         "segment",
         help="Automatic segmentation tool"
@@ -24,7 +29,10 @@ def add_segment_parser(subparsers):
     parser.set_defaults(func=run_segmentation)
     
 def run_segmentation(args):
-        cfg = SegmentationConfig.from_file(args.config)
-        cfg.create_run_folder()
-        
-        segment(cfg, dry=args.dry)
+    """
+    CLI entrypoint for segmentation tool
+    """
+    cfg = SegmentationConfig.from_file(args.config)
+    cfg.create_run_folder()
+    
+    segment(cfg, dry=args.dry)

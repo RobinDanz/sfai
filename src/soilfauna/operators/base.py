@@ -8,7 +8,9 @@ from pathlib import Path
 
 class Operator(ABC):
     """
-    Base abstract class for operators
+    Base abstract class for Operators.
+
+    The operations on image should be done in the `__call__` method.
     """
     @abstractmethod
     def __call__(self, ctx: PipelineContext) -> PipelineContext:

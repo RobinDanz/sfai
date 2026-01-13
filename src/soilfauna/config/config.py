@@ -14,7 +14,7 @@ class UserConfig:
     CONFIG_NAMESPACE: ClassVar[str | None] = None
     
     log_level: int = 1
-    root_dir: Path = default.ROOT_DIR
+    root_dir: Path = default.PROJECT_ROOT_DIR
     
     @classmethod
     def from_file(cls, path: str | Path):
@@ -116,6 +116,11 @@ class SegmentationConfig(UserConfig):
     datasets: List[Path] = field(default_factory=[])
     
     def validate(self):
+        """_summary_
+
+        Raises:
+            ValueError: _description_
+        """
         if self.datasets is None:
             raise ValueError("Dataset is required")
         

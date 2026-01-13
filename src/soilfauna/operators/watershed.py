@@ -19,14 +19,14 @@ class WatershedSegmentation(Operator):
     
     @save_artifacts
     def __call__(self, ctx: PipelineContext):
-        distance = cv2.distanceTransform(ctx.binary_mask, cv2.DIST_L2, 5)
-        distance_smooth = cv2.GaussianBlur(distance, (0,0), sigmaX=2)
+        distance = cv2.distanceTransform(ctx.binary_mask, cv2.DIST_L2, 3)
+        distance_smooth = cv2.GaussianBlur(distance, (0,0), sigmaX=1.5)
         mask = np.zeros_like(ctx.binary_mask, dtype=bool)
         
         local_max = peak_local_max(
             distance_smooth,
-            min_distance=10,
-            threshold_rel=0.05,
+            min_distance=1,
+            threshold_rel=0.03,
             labels=ctx.binary_mask
         )
         

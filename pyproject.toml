@@ -22,6 +22,9 @@ dependencies = [
     "pyyaml",
     "ultralytics",
     "tqdm",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings-python"
 ]
 
 [project.urls]

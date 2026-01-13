@@ -3,6 +3,15 @@ from dataclasses import dataclass
 
 @dataclass
 class Tile:
+    """Dataclass representing a Tile.
+
+    Attributes:
+        image (np.ndarray): Numpy array representing the tile
+        center (Tuple[int, int]): Center point of the tile in the source image
+        coords (Tuple[int, int, int, int]): Coordinates of the tile in the source image
+        width (int): Width of the tile
+        height (int): Height of the tile
+    """
     image: np.ndarray
     center: tuple[int, int]
     coords: tuple[int, int, int, int]
@@ -10,12 +19,27 @@ class Tile:
     height: int
 
 class ImageTiler:
+    """_summary_
+
+    Attributes:
+        rows (int, optional): _description_. Defaults to 5.
+        cols (int, optional): _description_. Defaults to 5.
+        overlap (int, optional): _description_. Defaults to 10.
+    """
     def __init__(self, rows: int = 5, cols: int = 5, overlap: int = 10):
         self.rows = rows
         self.cols = cols
         self.overlap = overlap
         
     def split(self, image: np.ndarray) -> list[Tile]:
+        """_summary_
+
+        Args:
+            image (np.ndarray): _description_
+
+        Returns:
+            list[Tile]: _description_
+        """
         h, w = image.shape[:2]
         
         tiles = []

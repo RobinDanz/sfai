@@ -188,7 +188,6 @@ biigle/*
 out/*
 
 # Local files
-data/*
 results/*
 .vscode
 

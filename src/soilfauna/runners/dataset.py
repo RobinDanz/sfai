@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, List
 from soilfauna.data import Dataset
 from soilfauna.export import JsonlBufferedWriter, CocoWriter, OutputHandler
 from soilfauna.export.data import CocoImage, CocoCategory, DEFAULT_CATEGORY
-from soilfauna.logging import GLOBAL_LOGGER
+from soilfauna.logging import LOGGER
 
 if TYPE_CHECKING:
     from soilfauna.runners import ImagePipelineRunner    
@@ -31,7 +31,7 @@ class DatasetRunner:
         annotations_writer = JsonlBufferedWriter(self.output_handler.annotations_jsonl_path)
         
         for i, (image_info, image) in enumerate(self.dataset, 1):
-            GLOBAL_LOGGER.info(f"Image: {i}/{self.dataset.length}")
+            LOGGER.info(f"Image: {i}/{self.dataset.length}")
             coco_img = CocoImage(
                 id=image_info.id,
                 width=image_info.width,

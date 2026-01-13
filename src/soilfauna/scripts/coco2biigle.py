@@ -1,20 +1,13 @@
-import argparse
 import json
 from pathlib import Path
 import os
 import pandas as pd
-from soilfauna.biigle import BiigleAPI
-from dotenv import load_dotenv
 import zipfile
 from datetime import datetime
 import shutil
 import glob
-
-load_dotenv()
-
-
-DEFAULT_OUTPUT = os.path.join(Path(__file__).parent.parent, 'out', 'biigle')
-BIIGLE_BASE_FILES = os.path.join(Path(__file__).parent.parent, 'soilfauna', 'biigle', 'data')
+from soilfauna.config import default
+from soilfauna.logging import LOGGER
 
 
 def merge_list(x):
@@ -38,30 +31,37 @@ def coco2df(coco):
 
     return coco_df
 
-
-def convert(args):
-    coco_file = args.coco
-    output_dir = args.out_dir
-    project_name = args.project_name
-    volume_name = args.volume_name
-    label_tree_name = args.label_tree_name
+def convert(
+        coco_file: str | Path,
+        label_tree_path: str | Path,
+        name: str | None = None,
+        output_dir: str | Path = default.DEFAULT_COCO2BIIGLE_OUTPUT_DIR,
+        project_name: str = "project01",
+        volume_name: str = "volume01"
+    ):
 
     with open(coco_file, 'r') as f:
         coco = json.load(f)
 
-    output_path = os.path.join(output_dir, project_name, volume_name)
-    temp_path = os.path.join(output_dir, 'temp')
-    Path(output_path).mkdir(parents=True, exist_ok=True)
-    Path(temp_path).mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    if not name:
+        name = str(len(next(os.walk(output_dir))[1]))
+
+    output_path = Path(os.path.join(output_dir, name, project_name, volume_name))
+    temp_path = Path(os.path.join(output_dir, name, 'temp'))
+
+    output_path.mkdir(parents=True, exist_ok=True)
+    temp_path.mkdir(parents=True, exist_ok=True)
 
     df = coco2df(coco)
 
     df['annotation_id'] = df.index + 1
-
-    api = BiigleAPI()
-    label_tree_file = api.download_label_tree(temp_path)
     
-    with zipfile.ZipFile('/Users/robin/DEV/soil-fauna-ai/out/biigle/temp/label-tree.zip', 'r') as zip:
+    if not label_tree_path.exists():
+        raise FileNotFoundError(f"{label_tree_path.absolute()} does not exist")
+
+    with zipfile.ZipFile(label_tree_path, 'r') as zip:
         zip.extractall(temp_path)
 
     label_tree_path = os.path.join(temp_path, 'label_trees.json')
@@ -156,12 +156,10 @@ def convert(args):
     with open(os.path.join(output_path, 'volumes.json'), "w") as js:
         json.dump(volume, js)
 
-    for z in glob.glob(os.path.join(BIIGLE_BASE_FILES, '*')):
-        print(z)
+    for z in glob.glob(os.path.join(default.BIIGLE_MODEL_FILES_DIR, '*.csv')):
         shutil.copy(z, os.path.join(output_path, os.path.basename(z)))
 
     for z in glob.glob(os.path.join(temp_path, '*.json')):
-        print(z)
         shutil.copy(z, os.path.join(output_path, os.path.basename(z)))
 
     to_compress = [f for f in glob.glob(os.path.join(output_path, '*'))]

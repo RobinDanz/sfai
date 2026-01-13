@@ -1,8 +1,9 @@
 import numpy as np
-from typing import List
+from typing import List, Optional
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import cv2
+import random
 
 from soilfauna.pipeline import Pipeline, PipelineContext
 from soilfauna.data import ImageTiler, Tile
@@ -12,8 +13,15 @@ from soilfauna.config import SegmentationConfig
 from soilfauna.data import ImageInfo
 from soilfauna.export.data import CocoAnnotation
 from soilfauna.export import OutputHandler
+from soilfauna.logging import PipelineProgess
 
-from soilfauna.logging import PIPELINE_LOGGER
+def random_rgb_bright(seed: Optional[int] = None, min_val=64, max_val=255):
+    rng = random.Random(seed)
+    return (
+        rng.randint(min_val, max_val),
+        rng.randint(min_val, max_val),
+        rng.randint(min_val, max_val),
+    )
 
 
 @dataclass
@@ -43,7 +51,7 @@ class ImagePipelineRunner:
             self.pipeline
         ).run(image_info, image, output_handler)
         
-        label_image = stitcher.stitch(results=tile_results, image_shape=image.shape[:2])
+        label_image = stitcher.stitch(tiles=tile_results, image_shape=image.shape[:2])
         
         for annotation in mask_processor.build_annotations(label_image, image_id=image_info.id, category_id=1):
             annotations.append(annotation)
@@ -63,11 +71,10 @@ class ImagePipelineRunner:
                     for shape in seg
                 ]
                 
-                cv2.polylines(img, polygons, isClosed=True, color=(0, 0, 255), thickness=3)
+                cv2.polylines(img, polygons, isClosed=True, color=random_rgb_bright(min_val=100), thickness=3)
             
             plt.imsave(f'{path}_contours.png', cv2.cvtColor(img, cv2.COLOR_BGR2RGB), format='png', dpi=400)
                 
-            
         return annotations
         
 class TilePipelinRunner:
@@ -83,8 +90,9 @@ class TilePipelinRunner:
     def run(self, image_info: ImageInfo, image: np.ndarray, output_handler: OutputHandler) -> List[TileResult]:
         tiles = self.tiler.split(image)
         results = []
-        
-        PIPELINE_LOGGER.start_image(image_info.file_name, nb_tiles=len(tiles))
+
+        progress = PipelineProgess()
+        progress.start(image_info.file_name, nb_tiles=len(tiles))
         
         for index, tile in enumerate(tiles):
             ctx = self.pipeline.run(tile.image, image_info, index, output_handler)
@@ -94,8 +102,8 @@ class TilePipelinRunner:
                 ctx=ctx
             ))
             
-            PIPELINE_LOGGER.update()
+            progress.update()
         
-        PIPELINE_LOGGER.end_image()
+        progress.close()
             
         return results

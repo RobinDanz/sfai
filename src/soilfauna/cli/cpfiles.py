@@ -2,6 +2,11 @@ from pathlib import Path
 from soilfauna.scripts import copy
 
 def add_cpfiles_parser(subparsers):
+    """_summary_
+
+    Args:
+        subparsers (_type_): _description_
+    """
     parser = subparsers.add_parser(
         "cpfiles",
         help="Tool to recursively copy or move files from source to destination."
@@ -39,6 +44,9 @@ def add_cpfiles_parser(subparsers):
     parser.set_defaults(func=run_cpfiles)
     
 def run_cpfiles(args):
+    """
+    CLI entrypoint for cpfiles tool
+    """
     source = Path(args.source).absolute()
     destination = Path(args.dest).absolute()
     move = args.move

@@ -66,10 +66,16 @@ class SAMSegmentation(Operator):
         return ctx
     
     def _get_device(self):
+
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         return device
     
     def model_info(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         return self.model.info()
     
     def merge_centers(self, centers, dist_thresh=20):

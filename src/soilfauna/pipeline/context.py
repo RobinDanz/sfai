@@ -6,6 +6,20 @@ from soilfauna.data import ImageInfo
 
 @dataclass
 class PipelineContext:
+    """Pipeline context used to pass data through all the stages of the pipeline.
+
+    Attributes:
+        index (int): Index of the image.
+        image (np.ndarray): Numpy array representing the image.
+        image_info (ImageInfo): Object holding informations about the image.
+        clean_image (np.ndarray): Image without background.
+        binary_mask (np.ndarray): Image after being binarized.
+        sam_mask (np.ndarray): Result of the SAM segmentation.
+        contours (Any | None): Result of the contour detection
+        points (np.ndarray): Center points of objects. Used as an input for SAM segmentation.
+        output_handler (OutputHandler | None):
+        metadata (Dict[str, Any]): Additional data
+    """
     index: int
     image: np.ndarray
     image_info: ImageInfo

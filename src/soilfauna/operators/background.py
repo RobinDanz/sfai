@@ -7,12 +7,22 @@ from pathlib import Path
 
 class HSVBackgroundRemoval(Operator):
     """
-    Removes background based on HSV colors
+    Removes background based on HSV colors.
+
+    Args:
+        lower_bound (Tuple[int, int, int], optional): HSV lower bound. Defaults to [90,  40,  40].
+        upper_bound (Tuple[int, int, int], optional): HSV upper bound. Defaults to [145, 255, 255].
+        save (bool, optional): If set to true, a result image is saved on disk. Defaults to False.
+
+    Attributes:
+        lower_bound (Tuple[int, int, int]): HSV lower bound.
+        upper_bound (Tuple[int, int, int]): HSV upper bound.
+        save (bool): If result image should be saved on disk or not.
     """
     
     save_folder = 'no_background'
     
-    def __init__(self, lower_bound=[90,  40,  40], upper_bound=[145, 255, 255], save: bool = False):
+    def __init__(self, lower_bound: Tuple[int, int, int] = [90,  40,  40], upper_bound: Tuple[int, int, int] = [145, 255, 255], save: bool = False):
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         self.save = save

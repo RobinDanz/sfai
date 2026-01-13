@@ -18,15 +18,12 @@ from soilfauna.data import ImageTiler, generate_datasets
 from soilfauna.runners import DatasetRunner, ImagePipelineRunner
 from soilfauna.export import OutputHandler
 
-from soilfauna.logging import GLOBAL_LOGGER
+from soilfauna.logging import LOGGER
 
 def segment(config: SegmentationConfig, dry=False):
     datasets = generate_datasets(config.datasets)
-    print(config.log_level)
     
-    GLOBAL_LOGGER.set_level(config.log_level)
-    
-    GLOBAL_LOGGER.info('START SEGMENTATION')
+    LOGGER.info('START SEGMENTATION')
     
     tiler = ImageTiler()
     
@@ -48,7 +45,7 @@ def segment(config: SegmentationConfig, dry=False):
     )
     
     for i, dataset in enumerate(datasets, 1):
-        GLOBAL_LOGGER.info(f"Dataset: {i}/{len(datasets)}")
+        LOGGER.info(f"Dataset: {i}/{len(datasets)}")
         if dataset.length > 0:
             out = OutputHandler(
                 base_dir=config.base_output_dir,

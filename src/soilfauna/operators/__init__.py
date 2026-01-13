@@ -5,3 +5,14 @@ from .watershed import WatershedSegmentation
 from .contours import ContourDetection
 from .centers import CentersDetection
 from .sam import SAMSegmentation
+
+__all__ = [
+    "Operator",
+    "HSVBackgroundRemoval",
+    "BinaryTransform",
+    "WatershedSegmentation",
+    "ContourDetection",
+    "CentersDetection",
+    "SAMSegmentation",
+    "save_artifacts"
+]

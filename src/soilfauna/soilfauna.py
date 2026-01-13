@@ -25,6 +25,11 @@ add_cpfiles_parser(subparsers)
 
 
 def main():
+    """
+    CLI entrypoint.
+
+    Allows to run the different tools.
+    """
     args = parser.parse_args()
     args.func(args)
     

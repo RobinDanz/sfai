@@ -1,8 +1,35 @@
-site_name: SoilFaunaAI
+site_name: soil-fauna-ai
 
-theme:
-  name: readthedocs
-  highlightjs: true
-  hljs_languages:
-    - yaml
-    - rust
+theme: 
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.action.edit
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            show_signature_annotations: true
+            docstring_style: google
+            members_order: source      
+
+nav:
+  - Home: index.md
+  - Quick Start: quickstart.md
+  - Usage: usage.md
+  - API References:
+    - cli: api/cli.md
+    - logging: api/logging.md
+    - data: api/data.md
+    - export: api/export.md
+    - operators: api/operators.md
+    - pipeline: api/pipeline.md
