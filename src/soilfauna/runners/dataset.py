@@ -2,18 +2,28 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, List
 
 from soilfauna.data import Dataset
-from soilfauna.export import JsonlBufferedWriter, CocoWriter, OutputHandler
-from soilfauna.export.data import CocoImage, CocoCategory, DEFAULT_CATEGORY
+from soilfauna.export import JsonlBufferedWriter, CocoWriter
+from soilfauna.export.data import CocoImage, DEFAULT_CATEGORY
 from soilfauna.logging import LOGGER
+from soilfauna.runners.image import ImagePipelineRunner   
 
 if TYPE_CHECKING:
-    from soilfauna.runners import ImagePipelineRunner    
+    from soilfauna.export import OutputHandler
+    from soilfauna.config import SegmentationConfig
+    from soilfauna.operators import Operator 
+    from soilfauna.export.data import CocoCategory
 
 class DatasetRunner:
-    def __init__(self, dataset: Dataset, image_runner: ImagePipelineRunner, output_handler: OutputHandler):
+    def __init__(self, dataset: Dataset, operators: List[Operator], output_handler: OutputHandler, config: SegmentationConfig):
+        self.operators = operators
+        self.config = config
         self.dataset = dataset
-        self.image_runner = image_runner
         self.output_handler = output_handler
+
+        self.image_runner = ImagePipelineRunner(
+            operators=operators,
+            config=self.config
+        )
 
     def run(self):
         categories: List[CocoCategory] = [DEFAULT_CATEGORY]

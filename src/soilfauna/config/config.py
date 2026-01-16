@@ -7,7 +7,7 @@ from typing import ClassVar, Mapping, List, get_args, get_origin
 from types import UnionType
 
 @dataclass(init=False)
-class UserConfig:
+class BaseConfig:
     """
     Base class holding a configuration
     """
@@ -57,12 +57,12 @@ class UserConfig:
         return {}
     
     def _apply_base_config(self, base_config: dict):
-        base_fields = {f.name for f in fields(UserConfig)}
+        base_fields = {f.name for f in fields(BaseConfig)}
         
         for name in base_fields:
             if name in base_config:
                 value = self._coerce(
-                    UserConfig.__annotations__[name],
+                    BaseConfig.__annotations__[name],
                     base_config[name],
                 )
                 
@@ -100,7 +100,7 @@ class UserConfig:
     
 
 @dataclass(init=False)
-class SegmentationConfig(UserConfig):
+class SegmentationConfig(BaseConfig):
     """
     Class holding a segmentation run configuration
     """

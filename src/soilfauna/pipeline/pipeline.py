@@ -1,8 +1,14 @@
-from soilfauna.operators import Operator
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import numpy as np
+
+    from soilfauna.operators import Operator    
+    from soilfauna.export import OutputHandler
+    from soilfauna.data import ImageInfo
+
 from soilfauna.pipeline import PipelineContext
-from soilfauna.export import OutputHandler
-from soilfauna.data import ImageInfo
-import numpy as np
 
 class Pipeline:
     """Pipeline class used to execute the operators on an image.

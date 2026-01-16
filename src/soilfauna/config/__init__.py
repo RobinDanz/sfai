@@ -1,3 +1,3 @@
-from .config import UserConfig, SegmentationConfig
+from .config import BaseConfig, SegmentationConfig
 
     

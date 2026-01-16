@@ -1,5 +1,11 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING, List, Optional
+
+if TYPE_CHECKING:
+    from soilfauna.operators import Operator
+    from soilfauna.config import SegmentationConfig
+
 import numpy as np
-from typing import List, Optional
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import cv2
@@ -9,7 +15,6 @@ from soilfauna.pipeline import Pipeline, PipelineContext
 from soilfauna.data import ImageTiler, Tile
 from soilfauna.stitch import MaskStitcher
 from soilfauna.mask import MaskProcessor
-from soilfauna.config import SegmentationConfig
 from soilfauna.data import ImageInfo
 from soilfauna.export.data import CocoAnnotation
 from soilfauna.export import OutputHandler
@@ -35,10 +40,9 @@ class ImagePipelineRunner:
     
     Handles image operations.
     """
-    def __init__(self, tiler: ImageTiler, pipeline: Pipeline, config: SegmentationConfig):
+    def __init__(self, operators: List[Operator], config: SegmentationConfig):
         self.config = config
-        self.tiler = tiler
-        self.pipeline = pipeline
+        self.operators = operators
         
     def run(self, image_info: ImageInfo, image: np.ndarray, output_handler: OutputHandler) -> List[CocoAnnotation]:
         annotations: List[CocoAnnotation] = []
@@ -47,8 +51,7 @@ class ImagePipelineRunner:
         mask_processor = MaskProcessor()
         
         tile_results = TilePipelinRunner(
-            self.tiler,
-            self.pipeline
+            self.operators
         ).run(image_info, image, output_handler)
         
         label_image = stitcher.stitch(tiles=tile_results, image_shape=image.shape[:2])
@@ -83,9 +86,11 @@ class TilePipelinRunner:
     
     Splits an image into tiles and runs operations on each tile.
     """
-    def __init__(self, tiler: ImageTiler, pipeline: Pipeline):
-        self.tiler = tiler
-        self.pipeline = pipeline
+    def __init__(self, operators: List[Operator]):
+        self.operators = operators
+
+        self.pipeline = Pipeline(operators=self.operators)
+        self.tiler = ImageTiler()
         
     def run(self, image_info: ImageInfo, image: np.ndarray, output_handler: OutputHandler) -> List[TileResult]:
         tiles = self.tiler.split(image)

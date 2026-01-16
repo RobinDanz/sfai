@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from soilfauna.config import SegmentationConfig
 
-from soilfauna.pipeline import Pipeline
 from soilfauna.operators import (
     HSVBackgroundRemoval,
     BinaryTransform,
@@ -14,8 +13,8 @@ from soilfauna.operators import (
     SAMSegmentation
 )
 
-from soilfauna.data import ImageTiler, generate_datasets
-from soilfauna.runners import DatasetRunner, ImagePipelineRunner
+from soilfauna.data import generate_datasets
+from soilfauna.runners import DatasetRunner
 from soilfauna.export import OutputHandler
 
 from soilfauna.logging import LOGGER
@@ -25,10 +24,7 @@ def segment(config: SegmentationConfig, dry=False):
     
     LOGGER.info('START SEGMENTATION')
     
-    tiler = ImageTiler()
-    
-    pipeline = Pipeline(
-        operators=[
+    operators = [
             HSVBackgroundRemoval(save=config.save_intermediate_images),
             BinaryTransform(save=config.save_intermediate_images),
             WatershedSegmentation(save=config.save_intermediate_images),
@@ -36,13 +32,6 @@ def segment(config: SegmentationConfig, dry=False):
             CentersDetection(save=config.save_intermediate_images),
             SAMSegmentation(config.model, save=config.save_intermediate_images),
         ]
-    )
-    
-    image_runner = ImagePipelineRunner(
-        tiler=tiler,
-        pipeline=pipeline,
-        config=config
-    )
     
     for i, dataset in enumerate(datasets, 1):
         LOGGER.info(f"Dataset: {i}/{len(datasets)}")
@@ -56,8 +45,9 @@ def segment(config: SegmentationConfig, dry=False):
             
             dataset_runner = DatasetRunner(
                 dataset=dataset,
-                image_runner=image_runner,
-                output_handler=out
+                operators=operators,
+                output_handler=out,
+                config=config
             )
     
             dataset_runner.run()

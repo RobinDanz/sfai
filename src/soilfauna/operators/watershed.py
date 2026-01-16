@@ -2,7 +2,6 @@ from soilfauna.operators import Operator, save_artifacts
 from soilfauna.pipeline import PipelineContext
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 from skimage.feature import peak_local_max
 from skimage.segmentation import watershed
 import scipy.ndimage as ndi
