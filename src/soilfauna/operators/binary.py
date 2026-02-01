@@ -30,7 +30,7 @@ class BinaryTransform(Operator):
         )
         
         ctx.binary_mask = binary
-        
+
         return ctx
     
     def result_image(self, ctx: PipelineContext):
@@ -42,7 +42,7 @@ class BinaryTransform(Operator):
         save_path = crop_subfolder / f'{ctx.index}.jpg'
         
         plt_kwargs = {
-            'cmap': 'binary'
+            'cmap': 'gray'
         }
         
         return ctx.binary_mask, save_path, plt_kwargs

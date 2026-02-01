@@ -1,5 +1,7 @@
 from soilfauna.operators import Operator, save_artifacts
 from soilfauna.pipeline import PipelineContext
+from scipy import ndimage
+import numpy as np
 import cv2
 
 class CentersDetection(Operator):
@@ -14,18 +16,33 @@ class CentersDetection(Operator):
     
     @save_artifacts
     def __call__(self, ctx: PipelineContext) -> PipelineContext:
-        centers = []
+        # centers = []
         
-        for contour in ctx.contours:
-            for i in contour:
-                M = cv2.moments(i)
-                if M["m00"] > 0:
-                    cx = int(M["m10"]/M["m00"])
-                    cy = int(M["m01"]/M["m00"])
-                    centers.append([cx, cy])
-                
-        ctx.points = centers
-        
+        # for contour in ctx.contours:
+        #     for i in contour:
+        #         M = cv2.moments(i)
+        #         if M["m00"] > 0:
+        #             cx = int(M["m10"]/M["m00"])
+        #             cy = int(M["m01"]/M["m00"])
+        #             centers.append([cx, cy])
+      
+        # ctx.points = centers
+
+        labels = ctx.metadata['labels']
+
+        unique_labels = np.unique(labels)
+        unique_labels = unique_labels[unique_labels != 0]
+
+        centers = ndimage.center_of_mass(
+            np.ones_like(labels),
+            labels,
+            unique_labels
+        )
+
+        centers_xy = [(int(c[1]), int(c[0])) for c in centers]
+
+        ctx.points = centers_xy
+
         return ctx
     
     def result_image(self, ctx: PipelineContext):

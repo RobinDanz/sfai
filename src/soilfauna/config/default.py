@@ -14,3 +14,10 @@ DEFAULT_RUN_NAME = 'default'
 DEFAULT_COCO2BIIGLE_OUTPUT_DIR = Path(os.path.join(WORK_DIR, 'results', 'coco2biigle'))
 
 BIIGLE_MODEL_FILES_DIR = Path(os.path.join(PROJECT_ROOT_DIR, 'data', 'biigle'))
+
+# Segmentation default values
+DEFAULT_HSV_LOWER_BOUND = [90,  40,  40]
+DEFAULT_HSV_UPPER_BOUND = [145, 255, 255]
+
+DEFAULT_TILE_ROWS = 5
+DEFAULT_TILE_COLUMNS = 5

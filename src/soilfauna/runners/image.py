@@ -10,6 +10,7 @@ from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import cv2
 import random
+import time
 
 from soilfauna.pipeline import Pipeline, PipelineContext
 from soilfauna.data import ImageTiler, Tile
@@ -49,15 +50,29 @@ class ImagePipelineRunner:
         
         stitcher = MaskStitcher()
         mask_processor = MaskProcessor()
-        
+
+        start_pipeline = time.time()
+
         tile_results = TilePipelinRunner(
             self.operators
         ).run(image_info, image, output_handler)
         
+        end_pipeline = time.time()
+
+        start_postprocess = time.time()
+
         label_image = stitcher.stitch(tiles=tile_results, image_shape=image.shape[:2])
         
         for annotation in mask_processor.build_annotations(label_image, image_id=image_info.id, category_id=1):
             annotations.append(annotation)
+        
+        end_postprocess = time.time()
+
+        stats = {
+            "pipeline": end_pipeline - start_pipeline,
+            "postprocess": end_postprocess - start_postprocess,
+            "total": (end_pipeline - start_pipeline) + (end_postprocess - start_postprocess)
+        }
             
         if self.config.save_final_images:
             path = output_handler.image_dir / image_info.name
@@ -78,7 +93,7 @@ class ImagePipelineRunner:
             
             plt.imsave(f'{path}_contours.png', cv2.cvtColor(img, cv2.COLOR_BGR2RGB), format='png', dpi=400)
                 
-        return annotations
+        return annotations, stats
         
 class TilePipelinRunner:
     """
@@ -100,6 +115,7 @@ class TilePipelinRunner:
         progress.start(image_info.file_name, nb_tiles=len(tiles))
         
         for index, tile in enumerate(tiles):
+            # plt.imsave(f'tiles/{image_info.name}_tile{index}.png', cv2.cvtColor(tile.image, cv2.COLOR_BGR2RGB), format='png', dpi=400)
             ctx = self.pipeline.run(tile.image, image_info, index, output_handler)
 
             results.append(TileResult(

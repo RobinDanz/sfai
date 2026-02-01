@@ -201,7 +201,7 @@ class MaskProcessor:
             Iterator[CocoAnnotation]: _description_
         """
         for i, mask in enumerate(self.extract_masks(label_image), 1):
-            polygons = self.mask_to_polygons(mask)
+            polygons = self.mask_to_polygons(mask, clean=False)
             
             if not polygons:
                 continue

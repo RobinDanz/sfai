@@ -5,7 +5,7 @@ from soilfauna.data import Dataset
 from soilfauna.export import JsonlBufferedWriter, CocoWriter
 from soilfauna.export.data import CocoImage, DEFAULT_CATEGORY
 from soilfauna.logging import LOGGER
-from soilfauna.runners.image import ImagePipelineRunner   
+from soilfauna.runners.image import ImagePipelineRunner
 
 if TYPE_CHECKING:
     from soilfauna.export import OutputHandler
@@ -26,6 +26,7 @@ class DatasetRunner:
         )
 
     def run(self):
+        stats = {}
         categories: List[CocoCategory] = [DEFAULT_CATEGORY]
         
         annotation_out = self.output_handler.annotation_dir / 'result.json'
@@ -51,8 +52,9 @@ class DatasetRunner:
             
             images_writer.write(coco_img)
             
-            annotations = self.image_runner.run(image_info, image, self.output_handler)
+            annotations, timing = self.image_runner.run(image_info, image, self.output_handler)
             annotations_writer.write_list(annotations)
+            stats[image_info.file_name] = timing
             
         images_writer.close()
         annotations_writer.close()

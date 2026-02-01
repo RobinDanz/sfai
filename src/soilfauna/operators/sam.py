@@ -3,6 +3,8 @@ from soilfauna.pipeline import PipelineContext
 from pathlib import Path
 import numpy as np
 
+import cv2
+
 from typing import TYPE_CHECKING
 
 def load_sam():
@@ -26,13 +28,13 @@ def load_torch():
             'PyTorch is not installed.'
             'Install it manually'
         )
+    
+torch = load_torch()        
+SAM = load_sam()
         
 if TYPE_CHECKING:
     import torch
     from ultralytics import SAM
-
-torch = load_torch()        
-SAM = load_sam()
 
 
 class SAMSegmentation(Operator):
@@ -45,20 +47,29 @@ class SAMSegmentation(Operator):
         self.model = SAM(model.absolute())
         self.device = self._get_device()
         self.save = save
+
+    def clean_mask(self, mask: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+        kernel = np.ones((kernel_size, kernel_size), np.uint8)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=2)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+
+        return mask
     
     @save_artifacts
     def __call__(self, ctx: PipelineContext) -> PipelineContext:
         tile_mask = np.zeros(ctx.image.shape[:2], dtype=np.uint16)
         points = self.merge_centers(ctx.points)
+
         label_count = 0
-        
+
         if len(points) > 0:
             results = self.model.predict(ctx.image, points=points)
             object_masks = [mask.cpu().numpy().astype(np.uint8) for result in results for mask in result.masks.data]
             merged_object_masks, label_count = self.merge_masks(object_masks)
             
             for i, mask in enumerate(merged_object_masks):
-                labeled_mask = mask.astype(np.uint16) * (i+1)
+                cleaned = self.clean_mask(mask, 5)
+                labeled_mask = cleaned.astype(np.uint16) * (i+1)
                 tile_mask = np.maximum(tile_mask, labeled_mask)
 
         ctx.sam_mask = tile_mask

@@ -28,7 +28,6 @@ def segment(config: SegmentationConfig, dry=False):
             HSVBackgroundRemoval(save=config.save_intermediate_images),
             BinaryTransform(save=config.save_intermediate_images),
             WatershedSegmentation(save=config.save_intermediate_images),
-            ContourDetection(save=config.save_intermediate_images),
             CentersDetection(save=config.save_intermediate_images),
             SAMSegmentation(config.model, save=config.save_intermediate_images),
         ]

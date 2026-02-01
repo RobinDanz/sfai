@@ -1,9 +1,9 @@
-from dataclasses import dataclass, fields, field
+from dataclasses import dataclass, fields, field, MISSING
 from pathlib import Path
 import os
 import yaml
 from soilfauna.config import default
-from typing import ClassVar, Mapping, List, get_args, get_origin
+from typing import ClassVar, Mapping, List, Tuple, get_args, get_origin
 from types import UnionType
 
 @dataclass(init=False)
@@ -33,12 +33,16 @@ class BaseConfig:
     def from_dict(cls, data: Mapping):
         fields_defs = {f.name: f for f in fields(cls)}
         obj = cls.__new__(cls)
-        
         for name, field in fields_defs.items():
-            if name in data:
+            if name in data and data[name]:
                 value = cls._coerce(field.type, data[name])
             else:
-                value = field.default
+                if field.default_factory is not MISSING:
+                    value = field.default_factory()
+                elif field.default is not MISSING:
+                    value = field.default
+                else:
+                    raise TypeError(f"Required field missing from config: {name}")
             setattr(obj, name, value)
 
         obj.validate()
@@ -110,10 +114,14 @@ class SegmentationConfig(BaseConfig):
     save_intermediate_images: bool = False
     save_final_images: bool = False
     name: str = default.DEFAULT_RUN_NAME
-    base_dir: Path = default.DEFAULT_OUTPUT_DIR
+    output_dir: Path = default.DEFAULT_OUTPUT_DIR
     model: Path = default.DEFAULT_MODEL
+    tile_rows: int = default.DEFAULT_TILE_ROWS
+    tile_columns: int = default.DEFAULT_TILE_COLUMNS
+    hsv_lower_bound: Tuple[int, int, int] = field(default_factory=lambda: default.DEFAULT_HSV_LOWER_BOUND)
+    hsv_upper_bound: Tuple[int, int, int] = field(default_factory=lambda: default.DEFAULT_HSV_UPPER_BOUND)
     
-    datasets: List[Path] = field(default_factory=[])
+    datasets: List[Path] = field(default_factory=lambda: [])
     
     def validate(self):
         """_summary_
@@ -128,7 +136,7 @@ class SegmentationConfig(BaseConfig):
             self.id = self._generate_id()
             
     def _generate_id(self) -> int:
-        run_dir = self.base_dir / self.name
+        run_dir = self.output_dir / self.name
         run_dir.mkdir(parents=True, exist_ok=True)
         
         next_id = len(next(os.walk(run_dir))[1])
@@ -140,6 +148,6 @@ class SegmentationConfig(BaseConfig):
         
     @property
     def base_output_dir(self) -> Path:
-        return Path(os.path.join(self.base_dir, self.name, str(self.id)))
+        return Path(os.path.join(self.output_dir, self.name, str(self.id)))
     
     

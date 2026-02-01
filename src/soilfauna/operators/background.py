@@ -31,8 +31,8 @@ class HSVBackgroundRemoval(Operator):
     def __call__(self, ctx: PipelineContext) -> PipelineContext:
         hsv = cv2.cvtColor(ctx.image, cv2.COLOR_BGR2HSV)
         
-        lower_blue = np.array([90,  40,  40])
-        upper_blue = np.array([145, 255, 255])
+        lower_blue = np.array(self.lower_bound)
+        upper_blue = np.array(self.upper_bound)
         
         mask_blue = cv2.inRange(hsv, lower_blue, upper_blue)
 
