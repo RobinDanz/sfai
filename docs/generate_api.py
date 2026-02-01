@@ -9,7 +9,7 @@ from pathlib import Path
 import pkgutil
 import mkdocs_gen_files
 
-import soilfauna
+import sfai
 
 DOCS_DIR = Path("docs")
 API_DIR = DOCS_DIR / "api"
@@ -23,7 +23,7 @@ def iter_modules(package):
     ):
         yield module.name
 
-for module_name in iter_modules(soilfauna):
+for module_name in iter_modules(sfai):
     if module_name.endswith("__main__"):
         continue
 

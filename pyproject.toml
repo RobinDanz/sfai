@@ -1,5 +1,5 @@
 [project]
-name = "soil-fauna-ai"
+name = "sfai"
 version = "0.0.1"
 description = ""
 authors = [
@@ -31,7 +31,7 @@ dependencies = [
 Homepage = "https://github.com/RobinDanz/soil-fauna-ai"
 
 [project.scripts]
-soilfauna = "soilfauna.soilfauna:main"
+sfai = "sfai.sfai:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
