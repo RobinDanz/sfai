@@ -22,6 +22,16 @@ from sfai.export import OutputHandler
 from sfai.logging import PipelineProgess
 
 def random_rgb_bright(seed: Optional[int] = None, min_val=64, max_val=255):
+    """Generate a random RGB color from a seed
+
+    Args:
+        seed (Optional[int], optional): Defaults to None.
+        min_val (int, optional):  Defaults to 64.
+        max_val (int, optional):  Defaults to 255.
+
+    Returns:
+        T (Tuple[int, int, int]): RGB color
+    """
     rng = random.Random(seed)
     return (
         rng.randint(min_val, max_val),
@@ -32,6 +42,8 @@ def random_rgb_bright(seed: Optional[int] = None, min_val=64, max_val=255):
 
 @dataclass
 class TileResult:
+    """Utility dataclass to hold a tile and the PipelineContext
+    """
     tile: Tile
     ctx: PipelineContext
 
@@ -45,7 +57,9 @@ class ImagePipelineRunner:
         self.config = config
         self.operators = operators
         
-    def run(self, image_info: ImageInfo, image: np.ndarray, output_handler: OutputHandler) -> List[CocoAnnotation]:
+    def run(self, image_info: ImageInfo, image: np.ndarray, output_handler: OutputHandler) -> tuple[List[CocoAnnotation], dict]:
+        """Run the pipeline on an image
+        """
         annotations: List[CocoAnnotation] = []
         
         stitcher = MaskStitcher()
@@ -89,9 +103,9 @@ class ImagePipelineRunner:
                     for shape in seg
                 ]
                 
-                cv2.polylines(img, polygons, isClosed=True, color=random_rgb_bright(min_val=100), thickness=3)
-            
-            plt.imsave(f'{path}_contours.png', cv2.cvtColor(img, cv2.COLOR_BGR2RGB), format='png', dpi=400)
+                cv2.polylines(img, polygons, isClosed=True, color=(0, 255, 0), thickness=4)
+            img_small = cv2.resize(img, None, fx=0.7, fy=0.7)
+            plt.imsave(f'{path}_contours.jpg', cv2.cvtColor(img_small, cv2.COLOR_BGR2RGB), format='jpg', pil_kwargs={"quality": 80})
                 
         return annotations, stats
         
@@ -115,7 +129,6 @@ class TilePipelinRunner:
         progress.start(image_info.file_name, nb_tiles=len(tiles))
         
         for index, tile in enumerate(tiles):
-            # plt.imsave(f'tiles/{image_info.name}_tile{index}.png', cv2.cvtColor(tile.image, cv2.COLOR_BGR2RGB), format='png', dpi=400)
             ctx = self.pipeline.run(tile.image, image_info, index, output_handler)
 
             results.append(TileResult(

@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/RobinDanz/soil-fauna-ai"
+Homepage = "https://github.com/RobinDanz/sfai"
 
 [project.scripts]
 sfai = "sfai.sfai:main"

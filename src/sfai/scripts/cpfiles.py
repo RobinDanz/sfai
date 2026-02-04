@@ -4,6 +4,17 @@ from typing import List
 import shutil
 
 def copy(source : Path, destination : Path, extensions: List[str] = [], move : bool = False):
+    """Copies source subfiles into destination
+
+    Args:
+        source (Path): Source folder
+        destination (Path): Destination folder. Created if not exists
+        extensions (List[str], optional): Filter files on extensions. Defaults to [].
+        move (bool, optional): If true, moves the file instead of copy. Defaults to False.
+
+    Raises:
+        NotADirectoryError: Raised if source does not exist or is not a folder.
+    """
     
     files_to_move = []
     extensions = [f".{ext.lstrip('.')}" for ext in extensions]

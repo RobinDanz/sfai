@@ -8,7 +8,6 @@ from sfai.operators import (
     HSVBackgroundRemoval,
     BinaryTransform,
     WatershedSegmentation,
-    ContourDetection, 
     CentersDetection,
     SAMSegmentation
 )
@@ -19,13 +18,17 @@ from sfai.export import OutputHandler
 
 from sfai.logging import LOGGER
 
-def segment(config: SegmentationConfig, dry=False):
+def segment(config: SegmentationConfig):
+    """Runs segmentation pipeline
+
+    Args:
+        config (SegmentationConfig):
+    """
     datasets = generate_datasets(config.datasets)
-    
-    LOGGER.info('START SEGMENTATION')
+    LOGGER.debug('START SEGMENTATION')
     
     operators = [
-            HSVBackgroundRemoval(save=config.save_intermediate_images),
+            HSVBackgroundRemoval(lower_bound=config.hsv_lower_bound, upper_bound=config.hsv_upper_bound, save=config.save_intermediate_images),
             BinaryTransform(save=config.save_intermediate_images),
             WatershedSegmentation(save=config.save_intermediate_images),
             CentersDetection(save=config.save_intermediate_images),

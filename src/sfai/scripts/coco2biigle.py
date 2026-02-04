@@ -1,3 +1,9 @@
+"""
+Taken, with author's permission, from Clément Schneider repository.
+
+https://github.com/ClemSc/SoilFaunAI/blob/main/src/coco2biigle
+"""
+
 import json
 from pathlib import Path
 import os
@@ -7,7 +13,6 @@ from datetime import datetime
 import shutil
 import glob
 from sfai.config import default
-from sfai.logging import LOGGER
 
 
 def merge_list(x):
@@ -17,9 +22,14 @@ def merge_list(x):
         return res
 
 def coco2df(coco):
-    '''
-    Fit a coco instance into a flat pandas DataFrame.
-    '''
+    """Fit a coco instance into a flat pandas DataFrame.
+
+    Args:
+        coco (dict): COCO format dict
+
+    Returns:
+        Dataframe: 
+    """
     classes_df = pd.DataFrame(coco['categories'])
     classes_df['name'] = classes_df['name'].str.strip()
     classes_df = classes_df.rename(columns={"id": "category_id"})
@@ -39,6 +49,19 @@ def convert(
         project_name: str = "project01",
         volume_name: str = "volume01"
     ):
+    """Converts a COCO annotation file into a BIIGLE volume.
+
+    Args:
+        coco_file (str | Path): 
+        label_tree_path (str | Path): Path to a BIIGLE label tree zip archive
+        name (str | None, optional):  Defaults to None.
+        output_dir (str | Path, optional): Defaults to default.DEFAULT_COCO2BIIGLE_OUTPUT_DIR.
+        project_name (str, optional): Defaults to "project01".
+        volume_name (str, optional): Defaults to "volume01".
+
+    Raises:
+        FileNotFoundError: Raised if `label_tree_path` does not exist.
+    """
 
     with open(coco_file, 'r') as f:
         coco = json.load(f)

@@ -2,10 +2,8 @@ from pathlib import Path
 from sfai.scripts import copy
 
 def add_cpfiles_parser(subparsers):
-    """_summary_
-
-    Args:
-        subparsers (_type_): _description_
+    """
+    Add cpfiles command parser to subparser
     """
     parser = subparsers.add_parser(
         "cpfiles",

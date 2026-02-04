@@ -55,10 +55,10 @@ class CocoImage(CocoData):
     """Representation of a COCO image
 
     Attributes:
-        id (int): _description_
-        width (int): _description_
-        height (int): _description_
-        file_name (str): _description_
+        id (int): 
+        width (int): 
+        height (int): 
+        file_name (str): 
     """
     width: int
     height: int

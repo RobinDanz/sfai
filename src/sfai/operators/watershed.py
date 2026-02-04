@@ -7,10 +7,11 @@ from skimage.segmentation import watershed
 import scipy.ndimage as ndi
 
 class WatershedSegmentation(Operator):
+    """Segmentaion with watershed
+
+    Args:
+        save (bool, optional): Save artifact or not. Defaults to False.
     """
-    Watershed segmentation operator
-    """
-    
     save_folder = 'watershed'
     
     def __init__(self, save: bool = False):

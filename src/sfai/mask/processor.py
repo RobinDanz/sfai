@@ -1,14 +1,17 @@
 import cv2
 import numpy as np
 
-from typing import Iterator, Tuple
+from typing import Iterator, Tuple, List
 from shapely import MultiPolygon, Polygon, union_all
 from shapely.geometry.polygon import orient
 from sfai.export.data import CocoAnnotation
 
 
 class MaskProcessor:
-    """_summary_
+    """Class to build COCO annotations from masks
+
+    Args:
+        min_area (int, optional): Minimum mask area in pixels. Defaults to 500.
     """
     def __init__(
         self,        
@@ -17,13 +20,13 @@ class MaskProcessor:
         self.min_area = min_area
         
     def extract_masks(self, label_image: np.ndarray):
-        """_summary_
+        """Extracts single mask from image with labelled objects
 
         Args:
-            label_image (np.ndarray): _description_
+            label_image (np.ndarray): An image that contains labelled objects
 
         Yields:
-            _type_: _description_
+            np.ndarray: The mask
         """
         object_ids = np.unique(label_image)
         object_ids = object_ids[object_ids != 0]
@@ -48,13 +51,13 @@ class MaskProcessor:
         return coords
     
     def validate_polygon(self, polygon: Polygon) -> Polygon | None:
-        """Validates a Polygon using Shapely `.is_valid` method.
+        """Validates a Polygon using Shapely `.is_valid` method. If not valid, tries to repair it with Shapely `.buffer` method.
 
         Args:
-            polygon (Polygon): _description_
+            polygon (Polygon): polygon to validate
 
         Returns:
-            Polygon | None: _description_
+            Polygon | None: Valid polygon or None
         """
         if polygon.is_valid:
             return polygon
@@ -82,19 +85,27 @@ class MaskProcessor:
 
         return mask
     
-    def smooth_contour(self, contour):
+    def smooth_contour(self, contour: np.ndarray) -> np.ndarray:
+        """Smooths a contour using openCV `approxPolyDP`
+
+        Args:
+            contour (_type_): np.ndarray
+
+        Returns:
+            np.ndarray: smoothed contour
+        """
         epsilon = 0.001 * cv2.arcLength(contour, True)
         return cv2.approxPolyDP(contour, epsilon, True)
             
-    def mask_to_polygons(self, mask: np.ndarray, clean: bool = True):
+    def mask_to_polygons(self, mask: np.ndarray, clean: bool = True) -> List[List[float]]:
         """Converts a mask to a polygon
 
         Args:
-            mask (np.ndarray): _description_
-            clean (bool, optional): _description_. Defaults to True.
+            mask (np.ndarray): mask to convert to a polygon
+            clean (bool, optional): If mask must be cleaned or not. Defaults to True.
 
         Returns:
-            _type_: _description_
+            List[List[float]]: List of polygones
         """
         if clean:
             mask = self.clean_mask(mask, 5)
@@ -190,15 +201,15 @@ class MaskProcessor:
         return int(np.count_nonzero(mask))
     
     def build_annotations(self, label_image: np.ndarray, image_id: int, category_id: int) -> Iterator[CocoAnnotation]:
-        """_summary_
+        """Build COCO annotations from a labelled image
 
         Args:
-            label_image (np.ndarray): _description_
-            image_id (int): _description_
-            category_id (int): _description_
+            label_image (np.ndarray): Labelled image
+            image_id (int): Image ID. Will be used in the returned COCO annotations
+            category_id (int): Category ID. Will be used in th returned COCO annotations.
 
         Yields:
-            Iterator[CocoAnnotation]: _description_
+            Iterator[CocoAnnotation]: COCO annotation
         """
         for i, mask in enumerate(self.extract_masks(label_image), 1):
             polygons = self.mask_to_polygons(mask, clean=False)

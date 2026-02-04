@@ -5,10 +5,11 @@ import numpy as np
 import cv2
 
 class CentersDetection(Operator):
+    """Detects objects center in labelled mask
+
+    Args:
+        save (bool, optional): Save artifact or not. Defaults to False.
     """
-    Object center detection based on contours
-    """
-    
     save_folder = 'centers'
     
     def __init__(self, save: bool = False):
@@ -16,18 +17,6 @@ class CentersDetection(Operator):
     
     @save_artifacts
     def __call__(self, ctx: PipelineContext) -> PipelineContext:
-        # centers = []
-        
-        # for contour in ctx.contours:
-        #     for i in contour:
-        #         M = cv2.moments(i)
-        #         if M["m00"] > 0:
-        #             cx = int(M["m10"]/M["m00"])
-        #             cy = int(M["m01"]/M["m00"])
-        #             centers.append([cx, cy])
-      
-        # ctx.points = centers
-
         labels = ctx.metadata['labels']
 
         unique_labels = np.unique(labels)

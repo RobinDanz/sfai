@@ -38,8 +38,11 @@ if TYPE_CHECKING:
 
 
 class SAMSegmentation(Operator):
-    """
-    Objects segmentation using SAM
+    """Transform image into a binary mask
+
+    Args:
+        model (Path | String): Path to the SAM model
+        save (bool, optional): Save artifact or not. Defaults to False.
     """
     save_folder = 'sam'
     
@@ -49,6 +52,15 @@ class SAMSegmentation(Operator):
         self.save = save
 
     def clean_mask(self, mask: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+        """Cleans a maks by applying an OPENNING and a CLOSING right after.
+
+        Args:
+            mask (np.ndarray): _description_
+            kernel_size (int, optional): Size of kernel used. Defaults to 3.
+
+        Returns:
+            np.ndarray: Cleaned mask
+        """
         kernel = np.ones((kernel_size, kernel_size), np.uint8)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=2)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
@@ -77,19 +89,32 @@ class SAMSegmentation(Operator):
         return ctx
     
     def _get_device(self):
+        """Returns torch device depending on availability.
 
+        Returns:
+            torch.device: device
+        """
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         return device
     
     def model_info(self):
-        """_summary_
+        """Get model info
 
         Returns:
-            _type_: _description_
+            (Tuple[int, int, int, float | Any] | None): model info
         """
         return self.model.info()
     
     def merge_centers(self, centers, dist_thresh=20):
+        """Merge close points together
+
+        Args:
+            centers (List): points
+            dist_thresh (int, optional): Distance threshold. Defaults to 20.
+
+        Returns:
+            List: merged points
+        """
         centers = np.array(centers)
         used = np.zeros(len(centers), dtype=bool)
         merged = []

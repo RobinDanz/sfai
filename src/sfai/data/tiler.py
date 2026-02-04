@@ -19,12 +19,12 @@ class Tile:
     height: int
 
 class ImageTiler:
-    """_summary_
+    """Utility class to split an image into multiple tiles.
 
     Attributes:
-        rows (int, optional): _description_. Defaults to 5.
-        cols (int, optional): _description_. Defaults to 5.
-        overlap (int, optional): _description_. Defaults to 10.
+        rows (int, optional): Number of rows. Defaults to 5.
+        cols (int, optional): Number of columns. Defaults to 5.
+        overlap (int, optional): Overlap between tiles in pixels. Defaults to 10.
     """
     def __init__(self, rows: int = 5, cols: int = 5, overlap: int = 10):
         self.rows = rows
@@ -32,13 +32,13 @@ class ImageTiler:
         self.overlap = overlap
         
     def split(self, image: np.ndarray) -> list[Tile]:
-        """_summary_
+        """Returns a list of tiles generated from the input image.
 
         Args:
-            image (np.ndarray): _description_
+            image (np.ndarray):
 
         Returns:
-            list[Tile]: _description_
+            list[Tile]:
         """
         h, w = image.shape[:2]
         

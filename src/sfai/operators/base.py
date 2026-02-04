@@ -14,15 +14,31 @@ class Operator(ABC):
     """
     @abstractmethod
     def __call__(self, ctx: PipelineContext) -> PipelineContext:
+        """Applies the operator. Can read and write to the PipelineContext
+
+        Args:
+            ctx (PipelineContext): 
+
+        Returns:
+            PipelineContext: 
+        """
         pass
     
     @abstractmethod
     def result_image(self, ctx) -> Tuple[np.ndarray, Path, Dict[str, Any]]:
+        """Returns the result image after the operator is applied. Debug purpose.
+
+        Args:
+            ctx PipelineContext:
+
+        Returns:
+            T (Tuple[np.ndarray, Path, Dict[str, Any]]): Tuple that contains image, output path and optionnal pyplot `imsave` parameters
+        """
         pass
     
 def save_artifacts(method):
     """
-    Decorator that saves operator result images
+    Decorator to save artifact image
     """
     @wraps(method)
     def wrapper(self: Operator, ctx: PipelineContext, *args, **kwargs):

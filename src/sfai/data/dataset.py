@@ -116,7 +116,7 @@ class SingleImageDataset(Dataset):
     @property
     def length(self):
         """
-        int: Number of files in the dataset
+        Number of files in the dataset
         """
         return len(self.paths)
             

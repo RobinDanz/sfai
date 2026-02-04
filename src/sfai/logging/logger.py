@@ -1,16 +1,10 @@
 import logging
-import sys
-from typing import Dict
 import re
 from tqdm.auto import tqdm
 
-VERBOSE_LEVEL: Dict[int, int] = {
-    0: logging.WARNING,
-    1: logging.INFO,
-    2: logging.DEBUG
-}
-
 class TqdmHandler(logging.Handler):
+    """Custom handler to write logs while a tqdm bar is running.
+    """
     def emit(self, record):
         try:
             msg = self.format(record)
@@ -19,6 +13,8 @@ class TqdmHandler(logging.Handler):
             self.handleError(record)
         
 class UltralyticsInferenceFilter(logging.Filter):
+    """Custom log filter to filter Ultralytics inference logs
+    """
     SPEED_PATTERN = re.compile(r"Speed:.*inference", re.IGNORECASE)
     BATCH_PATTERN = re.compile(r"^\d+:\s+\d+x\d+", re.IGNORECASE)
 
@@ -33,6 +29,6 @@ class UltralyticsInferenceFilter(logging.Filter):
         
         return True
     
-LOGGER = logging.getLogger("soilfauna")
+LOGGER = logging.getLogger("sfai")
 """Logger. Should be used everywhere to display log messages.
 """

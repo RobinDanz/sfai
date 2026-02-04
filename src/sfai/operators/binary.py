@@ -4,7 +4,11 @@ import cv2
 import numpy as np
 
 class BinaryTransform(Operator):
-    
+    """Transform image into a binary mask
+
+    Args:
+        save (bool, optional): Save artifact or not. Defaults to False.
+    """
     save_folder = 'binary'
     
     def __init__(self, save: bool = False):

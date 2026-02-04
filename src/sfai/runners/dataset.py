@@ -14,6 +14,14 @@ if TYPE_CHECKING:
     from sfai.export.data import CocoCategory
 
 class DatasetRunner:
+    """Runner for a whole dataset
+
+    Args:
+        dataset (Dataset):
+        operators (List[Operator]):
+        output_handler (OutputHandler):
+        config (SegmentationConfig):
+    """
     def __init__(self, dataset: Dataset, operators: List[Operator], output_handler: OutputHandler, config: SegmentationConfig):
         self.operators = operators
         self.config = config
@@ -26,6 +34,8 @@ class DatasetRunner:
         )
 
     def run(self):
+        """Runs the pipeline on a dataset.
+        """
         stats = {}
         categories: List[CocoCategory] = [DEFAULT_CATEGORY]
         

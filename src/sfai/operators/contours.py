@@ -5,9 +5,13 @@ import cv2
 
 class ContourDetection(Operator):
     """
-    Contour detection based on labelled image
-    """
+    NOT USED ANYMORE
     
+    Contour detection operator.
+
+    Args:
+        save (bool, optional): Save artifact or not. Defaults to False.
+    """
     save_folder = 'contours'
     
     def __init__(self, save: bool = False):

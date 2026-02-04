@@ -18,6 +18,9 @@ class BaseConfig:
     
     @classmethod
     def from_file(cls, path: str | Path):
+        """
+        Load a configuration from a yaml file
+        """
         with open(path) as f:
             raw = yaml.safe_load(f) or {}
             
@@ -31,6 +34,9 @@ class BaseConfig:
             
     @classmethod
     def from_dict(cls, data: Mapping):
+        """
+        Generate a configuration from a dict
+        """
         fields_defs = {f.name: f for f in fields(cls)}
         obj = cls.__new__(cls)
         for name, field in fields_defs.items():
@@ -50,17 +56,26 @@ class BaseConfig:
         
     @classmethod
     def _extract_base_config(cls, raw: Mapping) -> dict:
+        """
+        Get high level configuration
+        """
         return {
             k: v for k, v in raw.items() if not isinstance(v, dict)
         }
         
     @classmethod
     def _extract_sub_config(cls, raw: Mapping) -> dict:
+        """
+        Get specific configuration for task
+        """
         if cls.CONFIG_NAMESPACE:
             return raw.get(cls.CONFIG_NAMESPACE, {})
         return {}
     
     def _apply_base_config(self, base_config: dict):
+        """
+        
+        """
         base_fields = {f.name for f in fields(BaseConfig)}
         
         for name in base_fields:
@@ -74,6 +89,9 @@ class BaseConfig:
     
     @staticmethod 
     def _coerce(tp, value):
+        """
+        Converts required values into Path
+        """
         if tp is Path and isinstance(value, str):
             return Path(value)
         if isinstance(tp, UnionType) and Path in get_args(tp):
@@ -124,10 +142,8 @@ class SegmentationConfig(BaseConfig):
     datasets: List[Path] = field(default_factory=lambda: [])
     
     def validate(self):
-        """_summary_
-
-        Raises:
-            ValueError: _description_
+        """
+        Validate a configuration. Generates the run ID
         """
         if self.datasets is None:
             raise ValueError("Dataset is required")
@@ -136,6 +152,9 @@ class SegmentationConfig(BaseConfig):
             self.id = self._generate_id()
             
     def _generate_id(self) -> int:
+        """
+        Generate run ID
+        """
         run_dir = self.output_dir / self.name
         run_dir.mkdir(parents=True, exist_ok=True)
         
@@ -144,6 +163,9 @@ class SegmentationConfig(BaseConfig):
         return next_id + 1
     
     def create_run_folder(self):
+        """
+        Create run folder
+        """
         self.base_output_dir.mkdir(parents=True, exist_ok=True)
         
     @property

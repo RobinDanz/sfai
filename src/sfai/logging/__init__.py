@@ -11,6 +11,8 @@ __all__ = [
 _INITIALIZED = False
 
 def _base_init():
+    """Customizes the LOGGER
+    """
     global _INITIALIZED
     if _INITIALIZED:
         return

@@ -3,7 +3,7 @@ import argparse
 from sfai.cli import add_segment_parser, add_coco2biigle_parser, add_cpfiles_parser
 
 parser = argparse.ArgumentParser(
-    prog='soilfauna',
+    prog='sfai',
     description='Set of tools to handle image files.'
 )
 

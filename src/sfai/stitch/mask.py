@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from collections import defaultdict
+import matplotlib.pyplot as plt
 
 if TYPE_CHECKING:
     from sfai.runners import TileResult
@@ -51,68 +52,66 @@ class MaskStitcher:
         H, W = image_shape[:2]
         final_mask = np.zeros((H, W), dtype=np.uint16)
         
+        offsets = []
         total_label_count = 0
-        
+
         for t in tiles:
+            offsets.append(total_label_count)
+            total_label_count += t.ctx.metadata.get('label_count', 0)
+        
+        dsu = DSU(total_label_count)
+
+        for t, offset in zip(tiles, offsets):
             tile = t.tile
             tile_mask = t.ctx.sam_mask
             x1, y1, x2, y2 = tile.coords
             h,w = tile_mask.shape
             
-            tile_mask[tile_mask > 0] += total_label_count
+            tile_mask = np.where(tile_mask > 0, tile_mask + offset, 0)
             
             if x1 > 0:
                 old = final_mask[y1:y2, x1]
                 new = tile_mask[:, 0]
                 for a, b in zip(old, new):
                     if a > 0 and b > 0:
-                        self.border_equiv[a].add(b)
-                        self.border_equiv[b].add(a)
+                        dsu.union(a, b)
                     
             if x2 < W:
                 old = final_mask[y1:y2, x2 - 1]
                 new = tile_mask[:, w - 1]
                 for a, b in zip(old, new):
                     if a > 0 and b > 0:
-                        self.border_equiv[a].add(b)
-                        self.border_equiv[b].add(a)
+                        dsu.union(a, b)
                         
             if y1 > 0:
                 old = final_mask[y1, x1:x2]
                 new = tile_mask[0, :]
                 for a, b in zip(old, new):
                     if a > 0 and b > 0:
-                        self.border_equiv[a].add(b)
-                        self.border_equiv[b].add(a)
+                        dsu.union(a, b)
             
             if y2 < H:
                 old = final_mask[y2 - 1, x1:x2]
                 new = tile_mask[h - 1, :]
                 for a, b in zip(old, new):
                     if a > 0 and b > 0:
-                        self.border_equiv[a].add(b)
-                        self.border_equiv[b].add(a)
+                        dsu.union(a, b)
 
             final_mask[y1:y2, x1:x2] = np.maximum(
                 final_mask[y1:y2, x1:x2],
                 tile_mask
             )
-            
-            total_label_count += t.ctx.metadata.get('label_count', 0)
-        
-        dsu = DSU(total_label_count)
-    
-        for a, neighbors in self.border_equiv.items():
-            for b in neighbors:
-                dsu.union(a, b)
 
-        final_image = np.zeros_like(final_mask)
+            plt.imsave(f'split.png', final_mask, cmap='nipy_spectral', format='png', dpi=400)
 
         unique = np.unique(final_mask)
         unique = unique[unique > 0]
 
+        label_map = np.arange(total_label_count + 1, dtype=np.uint16)
+
         for label in unique:
-            root = dsu.find(label)
-            final_image[final_mask == label] = root
+            label_map[label] = dsu.find(label)
+
+        final_image = label_map[final_mask]
         
         return final_image

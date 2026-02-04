@@ -4,6 +4,12 @@ from sfai.config import default
 
 
 class OutputHandler:
+    """Utility class that manages the output
+
+    Args:
+        base_dir (Path, optional): Base output directory. Defaults to default.DEFAULT_OUTPUT_DIR.
+        subname (str | None, optional): Subdir. Defaults to None.
+    """
     def __init__(self, base_dir: Path = default.DEFAULT_OUTPUT_DIR, subname: str | None = None):
         self.base_dir = base_dir
         
@@ -11,11 +17,22 @@ class OutputHandler:
             self.base_dir = self.base_dir / subname
         
     def generate_output_folders(self):
+        """Generate output folders for annotations, crops and images.
+        """
         self.annotation_dir.mkdir(parents=True, exist_ok=True)
         self.crop_dir.mkdir(parents=True, exist_ok=True)
         self.image_dir.mkdir(parents=True, exist_ok=True)
         
-    def generate_crop_subfodler(self, image_name: str, subfolder: str):
+    def generate_crop_subfodler(self, image_name: str, subfolder: str) -> Path:
+        """Generate a subfolder for each type of crop. The folder will be generated into the 'crops' folder.
+
+        Args:
+            image_name (str): Name of the image
+            subfolder (str): Name of the folder to create
+
+        Returns:
+            Path: Path to the subfolder
+        """
         crop_subfolder = self.crop_dir / image_name / subfolder
         crop_subfolder.mkdir(parents=True, exist_ok=True)
         

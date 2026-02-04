@@ -4,10 +4,8 @@ from sfai.config import default
 from sfai.scripts import convert
 
 def add_coco2biigle_parser(subparsers):
-    """_summary_
-
-    Args:
-        subparsers (_type_): _description_
+    """
+    Add coco2biigle command parser to subparser
     """
     parser = subparsers.add_parser(
         "coco2biigle",
@@ -52,10 +50,8 @@ def add_coco2biigle_parser(subparsers):
     parser.set_defaults(func=run_coco2biigle)
     
 def run_coco2biigle(args):
-    """_summary_
-
-    Args:
-        args (_type_): _description_
+    """
+    CLI entrypoint for coco2biigle tool
     """
     coco_file_path = Path(args.coco)
     label_tree_path = Path(args.label_tree_path)
