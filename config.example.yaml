@@ -1,0 +1,35 @@
+# Segmentation configuration
+segment:
+  # Root dir for the output
+  output_dir: /some/dir
+
+  # Name of the output folder. Will be created in the 'output_dir'
+  name: output_name
+
+  # SAM model to use for segmentation. Will be downloaded if needed.
+  model: models/sam2.1_b.pt
+
+  # Saving intermediate results (crops). Slows down the process
+  save_intermediate_images: False
+
+  # Saving final results (image with contours & image with labels)
+  save_final_images: True
+
+  # Images to segment. Can be folders with images or single images.
+  datasets: 
+    - /images/this_image.jpg
+    - /images/another_image.png
+    - /images/subfolder/a_folder_with_a_lot_of_images
+
+  # Below are specific configuration. Optionnal.
+
+  # Number of rows to split the image.
+  tile_rows: 3
+  # Number of columns to split the image.
+  tile_columns: 3
+
+  # Lower HSV bound for background removal
+  # hsv_lower_bound: [90,  50,  40]
+
+  # Higher HSV bound for background removal
+  # hsv_upper_bound: [145, 50, 255]

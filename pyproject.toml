@@ -1,0 +1,44 @@
+[project]
+name = "sfai"
+version = "0.0.1"
+description = ""
+authors = [
+  { name = "Robin Danz", email = "robin.danz@gmail.com" }
+]
+requires-python = ">=3.10"
+license = "MIT"
+readme = "README.md"
+
+dependencies = [
+    "requests",
+    "python-dotenv",
+    "opencv-python",
+    "numpy",
+    "matplotlib",
+    "scikit-learn",
+    "scikit-image",
+    "shapely",
+    "pandas",
+    "pyyaml",
+    "ultralytics",
+    "tqdm",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings-python"
+]
+
+[project.urls]
+Homepage = "https://github.com/RobinDanz/sfai"
+
+[project.scripts]
+sfai = "sfai.sfai:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]

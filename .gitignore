@@ -188,4 +188,8 @@ biigle/*
 out/*
 
 # Local files
-data/*
+results/*
+.vscode
+
+# Config files
+config.yaml
