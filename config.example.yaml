@@ -22,14 +22,8 @@ segment:
     - /images/subfolder/a_folder_with_a_lot_of_images
 
   # Below are specific configuration. Optionnal.
-
-  # Number of rows to split the image.
-  tile_rows: 3
-  # Number of columns to split the image.
-  tile_columns: 3
-
   # Lower HSV bound for background removal
-  # hsv_lower_bound: [90,  50,  40]
+  # hsv_lower_bound: [90,  40,  40]
 
   # Higher HSV bound for background removal
-  # hsv_upper_bound: [145, 50, 255]
+  # hsv_upper_bound: [145, 255, 255]
