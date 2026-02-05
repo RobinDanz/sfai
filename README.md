@@ -1,7 +1,15 @@
 # sfai
 UNINE Master Thesis Project
 
-Automatic segmentation tool using SAM models.
+sfai is a CLI tool split into different subtool:
+
+- Automatic segmentation
+- COCO to Biigle converter
+- Recursive file copy utility
+
+The segmentation gives the following results:
+
+![labels](doc/images/BM03-E_r5c4_labels.png)   ![contours](doc/images/BM03-E_r5c4_contours.jpg)
 
 ## Quick Start
 
@@ -25,7 +33,7 @@ pip install .
 ```
 
 ### CUDA support
-The tool supports CUDA if it is installed on your system. To run segmentation on the GPU follow the steps below.
+The tool supports CUDA. To run segmentation on the GPU follow the steps below.
 
 1. Uninstall current torch & torchvison package:
 
@@ -42,15 +50,6 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
 The version depends on your GPU and installed CUDA version. Check the exact command on the [PyTorch website](https://pytorch.org/get-started/locally/).
 
 ## Usage
-
-sfai is a CLI tool split into different subtool:
-
-- Automatic segmentation
-- COCO to Biigle converter
-- Recursive file copy utility
-
-
-
 ### Segmentation
 ```sh
 sfai segment --help
@@ -68,7 +67,31 @@ Example with a config file:
 sfai segment -c /path/to/config.yaml
 ```
 
-Take a look at the `config.example.yaml` file to get started.
+
+#### Configuration
+* `segment` (string): The top level of the segmentation configuration
+* `output_dir` (string): Where to save the files.
+* `name` (string): The run name. This directory will be created into the `output_dir`. if it does not exist.
+* `model` (string): The path to a SAM model. The model will be downloaded if it is not found.
+* `save_intermediate_images` (bool): If true, saves step for each tile of the input images. Generating thoses images slows the process down.
+* `save_final_images` (bool): If true, saves the final images with the segmentation results. It saves the mask and the polygones.
+* `datasets` (list[string]): List of paths to the images to segment. The path can either be a folder or a single image.
+
+#### Output
+The segmentation works in a "run" fashion. For each run with the same `name`, a folder with a number will be created into the `output_dir/name` directory. That folder will contain the output files: images, crops and annotations files.
+
+The generated annotations files are in COCO format. The images and the annotations are also written in a separated JSONL file in the same folder.
+
+#### Run on the samples
+1. Rename the `config.example.yaml` to `config.yaml`
+2. Edit the file:
+
+* Set the `output_dir` variable.
+* Optionnaly set an `output_name`. This will be the name of the folder inside of the `output_dir`.
+* Set `save_intermediate_images` to check the different steps.
+* Set `save_final_images` to generate an image of the final results.
+* Add `/path/to/sfai/samples/` to the `datasets`.
+* Run the tool: `sfai segment -c config.yaml`
 
 ### COCO to Biigle converter
 
