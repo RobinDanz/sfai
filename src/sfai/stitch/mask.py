@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from collections import defaultdict
-import matplotlib.pyplot as plt
 
 if TYPE_CHECKING:
     from sfai.runners import TileResult
@@ -101,8 +100,6 @@ class MaskStitcher:
                 final_mask[y1:y2, x1:x2],
                 tile_mask
             )
-
-            plt.imsave(f'split.png', final_mask, cmap='nipy_spectral', format='png', dpi=400)
 
         unique = np.unique(final_mask)
         unique = unique[unique > 0]
