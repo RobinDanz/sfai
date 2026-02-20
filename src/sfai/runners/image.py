@@ -119,7 +119,7 @@ class TilePipelinRunner:
         self.operators = operators
 
         self.pipeline = Pipeline(operators=self.operators)
-        self.tiler = ImageTiler()
+        self.tiler = ImageTiler(rows=8, cols=8)
         
     def run(self, image_info: ImageInfo, image: np.ndarray, output_handler: OutputHandler) -> List[TileResult]:
         tiles = self.tiler.split(image)
