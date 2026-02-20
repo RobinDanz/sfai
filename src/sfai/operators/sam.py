@@ -2,6 +2,7 @@ from sfai.operators import Operator, save_artifacts
 from sfai.pipeline import PipelineContext
 from pathlib import Path
 import numpy as np
+from sfai.logging import LOGGER
 
 import cv2
 
@@ -75,14 +76,18 @@ class SAMSegmentation(Operator):
         label_count = 0
 
         if len(points) > 0:
-            results = self.model.predict(ctx.image, points=points)
-            object_masks = [mask.cpu().numpy().astype(np.uint8) for result in results for mask in result.masks.data]
-            merged_object_masks, label_count = self.merge_masks(object_masks)
-            
-            for i, mask in enumerate(merged_object_masks):
-                cleaned = self.clean_mask(mask, 5)
-                labeled_mask = cleaned.astype(np.uint16) * (i+1)
-                tile_mask = np.maximum(tile_mask, labeled_mask)
+            try:
+                results = self.model.predict(ctx.image, points=points)
+                object_masks = [mask.cpu().numpy().astype(np.uint8) for result in results for mask in result.masks.data]
+                merged_object_masks, label_count = self.merge_masks(object_masks)
+                
+                for i, mask in enumerate(merged_object_masks):
+                    cleaned = self.clean_mask(mask, 5)
+                    labeled_mask = cleaned.astype(np.uint16) * (i+1)
+                    tile_mask = np.maximum(tile_mask, labeled_mask)
+            except torch.OutOfMemoryError:
+                LOGGER.warning(f'Memory error on {ctx.image_info.path}. Tile Ignored.')
+
 
         ctx.sam_mask = tile_mask
         ctx.metadata['label_count'] = label_count
